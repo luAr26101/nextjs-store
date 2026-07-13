@@ -10,10 +10,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { links } from "@/utils/links";
 import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { LuAlignLeft } from "react-icons/lu";
 
 function LinksDropdown() {
+  const { userId } = auth();
+  const isAdmin = userId === process.env.ADMIN_USER_ID;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -38,6 +41,7 @@ function LinksDropdown() {
         </SignedOut>
         <SignedIn>
           {links.map((link) => {
+            if (link.label === "dashboard" && !isAdmin) return null;
             return (
               <DropdownMenuItem key={link.href} asChild>
                 <Link href={link.href} className='capitalize w-full'>
