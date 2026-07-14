@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useFormStatus } from "react-dom";
+
 // import { SignInButton } from "@clerk/nextjs";
 // import { FaRegHeart, FaHeart } from "react-icons/fa";
-// import { LuTrash2, LuSquarePen } from "react-icons/lu";
+import { LuSquarePen, LuTrash2 } from "react-icons/lu";
 
 type btnSize = "default" | "lg" | "sm";
 
@@ -15,10 +16,6 @@ type SubmitButtonProps = {
   text?: string;
   size?: btnSize;
 };
-
-function Buttons() {
-  return <>Buttons</>;
-}
 
 export function SubmitButton({
   className = "",
@@ -44,4 +41,31 @@ export function SubmitButton({
   );
 }
 
-export default Buttons;
+type ActionType = "edit" | "delete";
+
+export const IconButton = ({ actionType }: { actionType: ActionType }) => {
+  const { pending } = useFormStatus();
+
+  const renderIcon = () => {
+    switch (actionType) {
+      case "edit":
+        return <LuSquarePen />; // Replace with actual edit icon
+      case "delete":
+        return <LuTrash2 />; // Replace with actual delete icon
+      default:
+        const never: never = actionType;
+        throw new Error(`Invalid action type ${never}`);
+    }
+  };
+
+  return (
+    <Button
+      type='submit'
+      size='icon'
+      variant='link'
+      className='p-2 cursor-pointer'
+    >
+      {pending ? <ReloadIcon className='animate-spin' /> : renderIcon()}
+    </Button>
+  );
+};
