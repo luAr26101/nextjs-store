@@ -1,16 +1,22 @@
 import FavoriteToggleButton from "@/components/products/favorite-toggle-button";
+import ProductReviews from "@/components/reviews/product-reviews";
+import SubmitReview from "@/components/reviews/submit-review";
 import AddToCart from "@/components/single-product/add-to-cart";
 import Breadcrumbs from "@/components/single-product/breadcrumbs";
 import ProductRating from "@/components/single-product/product-rating";
 import ShareButton from "@/components/single-product/share-button";
-import { fetchSingleProduct } from "@/utils/actions";
+import { fetchSingleProduct, findExistingReview } from "@/utils/actions";
 import { formatCurrency } from "@/utils/format";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 
 async function SingleProductPage({ params }: { params: { id: string } }) {
   const product = await fetchSingleProduct(params.id);
-  const { name, image, company, price, description } = product;
+  const { id: productId, name, image, company, price, description } = product;
   const dollarAmount = formatCurrency(price);
+  const { userId } = auth();
+  const reviewDoesNotExit =
+    userId && !(await findExistingReview(userId, productId));
   return (
     <section>
       <Breadcrumbs name={name}></Breadcrumbs>
@@ -45,6 +51,9 @@ async function SingleProductPage({ params }: { params: { id: string } }) {
           <AddToCart productId={params.id} />
         </div>
       </div>
+      {/* REVIEWS SECTION */}
+      <ProductReviews productId={params.id} />
+      {reviewDoesNotExit && <SubmitReview productId={params.id} />}
     </section>
   );
 }
