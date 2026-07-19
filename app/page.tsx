@@ -5,7 +5,7 @@ import { Suspense } from "react";
 
 const HomePage = () => {
   return (
-    <div className='text-muted-foreground'>
+    <div>
       <Hero />
       <Suspense fallback={<LoadingContainer />}>
         <FeaturedProducts />
